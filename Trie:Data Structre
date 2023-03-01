@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
+#define ALPHABET_SIZE 26
+
+// Trie node struct
+struct TrieNode {
+    struct TrieNode* children[ALPHABET_SIZE];
+    bool isEndOfWord;
+};
+
+// Create a new Trie node
+struct TrieNode* createTrieNode() {
+    struct TrieNode* node = (struct TrieNode*) malloc(sizeof(struct TrieNode));
+    node->isEndOfWord = false;
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        node->children[i] = NULL;
+    }
+    return node;
+}
+
+// Insert a word into the Trie
+void insert(struct TrieNode* root, char* word) {
+    struct TrieNode* node = root;
+    int n = strlen(word);
+    for (int i = 0; i < n; i++) {
+        int index = word[i] - 'a';
+        if (!node->children[index]) {
+            node->children[index] = createTrieNode();
+        }
+        node = node->children[index];
+    }
+    node->isEndOfWord = true;
+}
+
+// Search for a word in the Trie
+bool search(struct TrieNode* root, char* word) {
+    struct TrieNode* node = root;
+    int n = strlen(word);
+    for (int i = 0; i < n; i++) {
+        int index = word[i] - 'a';
+        if (!node->children[index]) {
+            return false;
+        }
+        node = node->children[index];
+    }
+    return node != NULL && node->isEndOfWord;
+}
+
+// Main function
+int main() {
+    // Create the root node of the Trie
+    struct TrieNode* root = createTrieNode();
+    
+    // Insert some words into the Trie
+    insert(root, "apple");
+    insert(root, "banana");
+    insert(root, "cherry");
+    insert(root, "grape");
+    insert(root, "orange");
+    
+    // Search for some words in the Trie
+    printf("%s\n", search(root, "apple") ? "Found" : "Not found");
+    printf("%s\n", search(root, "banana") ? "Found" : "Not found");
+    printf("%s\n", search(root, "cherry") ? "Found" : "Not found");
+    printf("%s\n", search(root, "grape") ? "Found" : "Not found");
+    printf("%s\n", search(root, "orange") ? "Found" : "Not found");
+    printf("%s\n", search(root, "watermelon") ? "Found" : "Not found");
+    
+    // Free the memory allocated for the Trie
+    free(root);
+    
+    return 0;
+}
